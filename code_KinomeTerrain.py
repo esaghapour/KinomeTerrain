@@ -355,7 +355,7 @@ if btn3:
                               ))
     
     
-                fig.update_layout(coloraxis_showscale=False)
+                #fig.update_layout(coloraxis_showscale=False)
                 fig.update_layout( title=Array[itr]+ ' ( ' +Drug[itr]+' )')
                 cols[i].plotly_chart(fig)
                 itr=itr+1
@@ -432,7 +432,7 @@ if btn4:
                                   ))
         
         
-                    fig.update_layout(coloraxis_showscale=False)
+                    #fig.update_layout(coloraxis_showscale=False)
                     fig.update_layout( title=Patinet11[itr])
                     cols[i].plotly_chart(fig)
                     itr=itr+1
