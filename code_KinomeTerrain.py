@@ -10,6 +10,8 @@ import plotly.express as px
 import networkx as nx
 import plotly.figure_factory as ff
 from scipy.spatial.distance import pdist, squareform
+import seaborn as sns
+from matplotlib import pyplot as plt
 
 data= pd.read_csv('Kinome_SIGNAL_(MinBknd).csv',sep=',',header=None)
 data1= pd.read_csv('log2_kinome.csv',sep=',',header=None)
@@ -355,7 +357,7 @@ if btn3:
                               ))
     
     
-                #fig.update_layout(coloraxis_showscale=False)
+                # fig.update_layout(coloraxis_showscale=False)
                 fig.update_layout( title=Array[itr]+ ' ( ' +Drug[itr]+' )')
                 cols[i].plotly_chart(fig)
                 itr=itr+1
@@ -432,14 +434,98 @@ if btn4:
                                   ))
         
         
-                    #fig.update_layout(coloraxis_showscale=False)
+                    # fig.update_layout(coloraxis_showscale=False)
                     fig.update_layout( title=Patinet11[itr])
                     cols[i].plotly_chart(fig)
                     itr=itr+1
 
 
 
-def cr_heat_denogram(data_array,labels):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
+def cr_heat_denogram(data_array,labels,labels_col,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
+    # Initialize figure by creating upper dendrogram
+    fig = ff.create_dendrogram(data_array, orientation='bottom', labels=labels)
+    for i in range(len(fig['data'])):
+        fig['data'][i]['yaxis'] = 'y2'
+    
+    # for data in fig['data']:
+    #     fig.add_trace(data)
+    
+    # Create Side Dendrogram
+    dendro_side = ff.create_dendrogram(data_array.T, orientation='right', labels=labels_col)
+    for i in range(len(dendro_side['data'])):
+        dendro_side['data'][i]['xaxis'] = 'x2'
+    
+    # Add Side Dendrogram Data to Figure
+    for data in dendro_side['data']:
+        fig.add_trace(data)
+    
+    # Create Heatmap
+    # dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
+    # dendro_leaves = list(map(int, dendro_leaves))
+    # data_dist = pdist(data_array.T)
+    # heat_data = squareform(data_dist)
+    # heat_data = heat_data[dendro_leaves,:]
+    # heat_data = heat_data[:,dendro_leaves]
+    
+    heatmap = [
+        go.Heatmap(
+            x = labels,
+            y = labels_col,
+            z = data_array.T,
+            colorscale = 'Blues'
+        )
+    ]
+    
+    heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
+    heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
+    
+    # Add Heatmap Data to Figure
+    for data in heatmap:
+        fig.add_trace(data)
+    
+    # Edit Layout
+    fig.update_layout({'width':800, 'height':800,
+                              'showlegend':False, 'hovermode': 'closest',
+                              })
+    # Edit xaxis
+    fig.update_layout(xaxis={'domain': [.15, 1],
+                                      'mirror': False,
+                                      'showgrid': False,
+                                      'showline': False,
+                                      'zeroline': False,
+                                      'ticks':""})
+    # Edit xaxis2
+    fig.update_layout(xaxis2={'domain': [0, .15],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
+    
+    # Edit yaxis
+    fig.update_layout(yaxis={'domain': [0, .85],
+                                      'mirror': False,
+                                      'showgrid': False,
+                                      'showline': False,
+                                      'zeroline': False,
+                                      'showticklabels': False,
+                                      'ticks': ""
+                            })
+    # Edit yaxis2
+    fig.update_layout(yaxis2={'domain':[.825, .975],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
+    fig.update_layout(title=title)
+    #               yaxis={'labels_col.to_list'})
+    # Plot!
+    return fig
+
+def cr_heat_denogram1(data_array,labels,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
     # Initialize figure by creating upper dendrogram
     fig = ff.create_dendrogram(data_array, orientation='bottom', labels=labels)
     for i in range(len(fig['data'])):
@@ -473,15 +559,15 @@ def cr_heat_denogram(data_array,labels):      #This fucntion had gotten from htt
     
     heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
     heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
-    
+
     # Add Heatmap Data to Figure
     for data in heatmap:
         fig.add_trace(data)
     
     # Edit Layout
     fig.update_layout({'width':800, 'height':800,
-                             'showlegend':False, 'hovermode': 'closest',
-                             })
+                              'showlegend':False, 'hovermode': 'closest',
+                              })
     # Edit xaxis
     fig.update_layout(xaxis={'domain': [.15, 1],
                                       'mirror': False,
@@ -491,12 +577,12 @@ def cr_heat_denogram(data_array,labels):      #This fucntion had gotten from htt
                                       'ticks':""})
     # Edit xaxis2
     fig.update_layout(xaxis2={'domain': [0, .15],
-                                       'mirror': False,
-                                       'showgrid': False,
-                                       'showline': False,
-                                       'zeroline': False,
-                                       'showticklabels': False,
-                                       'ticks':""})
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
     
     # Edit yaxis
     fig.update_layout(yaxis={'domain': [0, .85],
@@ -509,17 +595,16 @@ def cr_heat_denogram(data_array,labels):      #This fucntion had gotten from htt
                             })
     # Edit yaxis2
     fig.update_layout(yaxis2={'domain':[.825, .975],
-                                       'mirror': False,
-                                       'showgrid': False,
-                                       'showline': False,
-                                       'zeroline': False,
-                                       'showticklabels': False,
-                                       'ticks':""})
-    
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
+    fig.update_layout(title=title)
+    #               yaxis={'labels_col.to_list'})
     # Plot!
     return fig
-
-
 # st.plotly_chart(node_trace)
 st.text('******************************************************************************************')
 
@@ -532,21 +617,52 @@ with col1:
             )
 # get data
 data1= pd.read_csv('log2_kinome.csv',sep=',',header=None)
+labels_col=data1.iloc[1,7:91]+'_'+data1.iloc[2,7:91]
 labels=data1.iloc[8:,0]
 labels=labels.to_list()
+st.set_option('deprecation.showPyplotGlobalUse', False)
 btn5= st.checkbox('Run',key=5)
 if btn5:
     if Array1 != 'All_Array':
         idx=np.where(data1.iloc[2,0:91]==Array1)[0]
         data_array=data1.iloc[8:,idx]
+        labels_col=data1.iloc[1,idx]+'_'+data1.iloc[2,idx]
         data_array=data_array.values
     
-        fig=cr_heat_denogram(data_array,labels)
-        st.plotly_chart(fig)
+        fig1=cr_heat_denogram1(data_array,labels,'Peptide vs Peptide')
+        st.plotly_chart(fig1)
+        fig2=cr_heat_denogram1(data_array.T,labels_col.to_list(),'Tumor vs Tumor')
+        st.plotly_chart(fig2)
+        fig3=cr_heat_denogram(data_array,labels,labels_col.to_list(),'Peptide vs Tumor')
+        st.plotly_chart(fig3)
+        data_array=pd.DataFrame(data_array).astype('float')
+        data_array.index=labels
+        data_array.columns=labels_col.to_list()
+        
+        # sns.clustermap(data_array,standard_scale=1, metric="correlation",figsize=(10, 30))
+        # sns.clustermap(data_array, standard_scale=1)
+        sns.clustermap(data_array, standard_scale=1,figsize=(20, 30))
+        st.pyplot()
+        sns.clustermap(data_array.T, standard_scale=1,figsize=(30, 20))
+        st.pyplot()
     else:
         
         data_array=data1.iloc[8:,7:91]
         data_array=data_array.values
-    
-        fig=cr_heat_denogram(data_array,labels)
-        st.plotly_chart(fig)
+        labels_col=data1.iloc[1,7:91]+'_'+data1.iloc[2,7:91]
+        fig1=cr_heat_denogram1(data_array,labels,'Peptide vs Peptide')
+        st.plotly_chart(fig1)
+        fig2=cr_heat_denogram1(data_array.T,labels_col.to_list(),'Tumor vs Tumor')
+        st.plotly_chart(fig2)
+        fig3=cr_heat_denogram(data_array,labels,labels_col.to_list(),'Peptide vs Tumor')
+        st.plotly_chart(fig3)
+        data_array=pd.DataFrame(data_array).astype('float')
+        data_array.index=labels
+        data_array.columns=labels_col.to_list()
+        
+        # sns.clustermap(data_array,standard_scale=1, metric="correlation",figsize=(10, 30))
+        # sns.clustermap(data_array, standard_scale=1)
+        sns.clustermap(data_array, standard_scale=1,figsize=(20, 30))
+        st.pyplot()
+        sns.clustermap(data_array.T, standard_scale=1,figsize=(30, 20))
+        st.pyplot()
