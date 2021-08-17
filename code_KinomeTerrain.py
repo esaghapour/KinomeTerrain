@@ -11,8 +11,11 @@ import networkx as nx
 import plotly.figure_factory as ff
 from scipy.spatial.distance import pdist, squareform
 import seaborn as sns
-from matplotlib import pyplot as plt
-
+st.set_page_config(
+     page_title="KinomeTerrain App",
+    page_icon=":shark:",
+    layout="wide",
+     initial_sidebar_state="auto")
 data= pd.read_csv('Kinome_SIGNAL_(MinBknd).csv',sep=',',header=None)
 data1= pd.read_csv('log2_kinome.csv',sep=',',header=None)
 
@@ -72,14 +75,14 @@ for i in range(3*68+7,(68*4*21)+7,68*4):
     itr=itr+1
 
 
-st.title('KinomeTerrain (Version 1)')
-st.text('By E.Saghapour, J.Anderson, K.Lee, C.Willey(Leader).')
+st.title('KinomeTerrain (Version 2)')
+st.text('By E.Saghapour, J.Anderson, Jake Chen(Leader), C.Willey(Leader).')
 
 # st.header('Plot Cycle/Exposure_Time to Signal for each Peptide in different arrays and Tumors')
 st.header('Kinetic Phosphorylation Over Time')
 
 
-col1,col2,col3= st.beta_columns(3)
+col1,col2,col3,col4= st.beta_columns(4)
 with col1:
     peptide1 = st.selectbox(
                 "ID_peptide", ID_peptide.to_list(),key=11)
@@ -91,15 +94,15 @@ with col3:
     Tumor1= st.selectbox(
                 "Tumor", patient_id,key=11 )
     
-# with col4:
-#     plt_cycle_exposure= st.selectbox(
-#                 "Cycle/Exposure", ['Cycle','Exposure_Time'])
+with col4:
+    plt_cycle_exposure= st.selectbox(
+                "Cycle/Exposure", ['Cycle','Exposure_Time'])
 
-plt_cycle_exposure ="Cycle"
+# plt_cycle_exposure ="Cycle"
 
-agree = st.checkbox('Exposure_Time (Default is Cycle)')
-if agree: 
-    plt_cycle_exposure='Exposure_Time'
+# agree = st.checkbox('Exposure_Time (Default is Cycle)')
+# if agree: 
+#     plt_cycle_exposure='Exposure_Time'
     
 
 idx=np.where(data.iloc[5,7:]==Tumor1)[0][0]//(68*4)
@@ -128,13 +131,13 @@ def cr_two_fig(Cycle_signal):
     # st.plotly_chart(fig1)
     fig.update_layout(
         autosize=False,
-        width=350,
+        width=600,
         height=400,
 
         )
     fig1.update_layout(
         autosize=False,
-        width=350,
+        width=600,
         height=400,
 
         )
@@ -170,8 +173,7 @@ if btn1:
         else:
             cr_two_fig(Cycle_signal)
             
-        st.plotly_chart(fig)
-    elif Array1=='A2':
+    elif Array1=='A3':
         Cycle_signal['Signal']=A3[idx,idx_peptide,:]
         mm=np.mean(A3[idx,idx_peptide,-8:-1])
         mm1=np.mean(A3[idx,idx_peptide,0:5])
@@ -181,13 +183,10 @@ if btn1:
             st.plotly_chart(fig)
         else:
             cr_two_fig(Cycle_signal)  
-            
-        
-        
-    
+
     else:
         Cycle_signal['Signal']=A4[idx,idx_peptide,:]
-        # Cycle_signal=Cycle_signal.sort_values(by=['Cycle'],ascending=False)
+
         mm=np.mean(A4[idx,idx_peptide,-8:-1])
         mm1=np.mean(A4[idx,idx_peptide,0:5])
         if plt_cycle_exposure=='Cycle':
@@ -248,35 +247,53 @@ network = np.core.records.fromarrays(network.values.T,
 
 G=nx.Graph()
 G.add_weighted_edges_from(network)
+# # pos= nx.kamada_kawai_layout(G)
+# # pos=nx.random_layout(G)
+# pos=nx.spring_layout(G)
+# pos=nx.rescale_layout_dict(pos)
+# G.nodes()
 
-pos= nx.kamada_kawai_layout(G)
 
-G.nodes()
-
-res=400
-node_x = []
-node_y = []
-for node in G.nodes():
-    x, y = pos[node]
-    node_x.append(200*x+200)
-    node_y.append(200*y+200)
-nme=[]
-for node in G.nodes():
-    nme.append(node)
 
 
 # sigma=.04
 
 # sample_id=sample_id.to_list()
+def graph(name):
+        name_graph=['Kamada-Kawai','circular',
+                     'random','fruchterman_reingold','bipartite','spring','shell'] 
+        idx=np.where(np.array(name_graph)==name)[0]
+        print(name)
+        print(idx)
+        if idx==0:
+            pos= nx.kamada_kawai_layout(G)
+        elif idx==1:
+            pos= nx.circular_layout(G)
 
-def cr_gt(data1,sigma,res,max_dat):  # Create for Gene terrain 
+        elif idx==2:
+            pos= nx.random_layout(G)
+        elif idx==3:
+            pos= nx.fruchterman_reingold_layout(G)
+        elif idx==4:
+            pos= nx.bipartite_layout(G,G)
+        elif idx==5:
+            pos= nx.spring_layout(G)
+        elif idx==6:
+            pos= nx.shell_layout(G)
+        pos=nx.rescale_layout_dict(pos)
+        return (pos)
+            
+
+
+
+def cr_gt(data1,sigma,res,max_dat,pos):  # Create for Gene terrain 
     
     x_ = np.linspace(-1, 1, res)
     y_ = np.linspace(-1, 1, res)
     X, Y = np.meshgrid(x_, y_)
     
     gaussian=np.zeros((res,res))
-    
+
     pi=3.14
     itr=0
     for node in G.nodes():
@@ -291,12 +308,12 @@ def cr_gt(data1,sigma,res,max_dat):  # Create for Gene terrain
     return 1-gray
 
 # st.title('KinomeTerrain')
-st.text('******************************************************************************************')
+st.text('***********************************************************************************************************************************')
 
 
 st.header('Drug Response Terrain Patterning')
 
-col1,col2,col3= st.beta_columns(3)
+col1,col2,col3,col4= st.beta_columns(4)
 with col1:
     Patinet1 = st.selectbox(
                 "Tumor", patient_id
@@ -307,11 +324,26 @@ with col2:
     Cycle1 = st.selectbox(
                 "Cycle", Cycle
             )
-with col3:
+if Cycle1 != str(154): 
+    with col3:
+    
+        Exposure_time1 = st.selectbox(
+                    "Exposure_time", ['20','50','100']
+                )
+else:
+    with col3:
+        Exposure_time1 = st.selectbox(
+                    "Exposure_time", ['10','20','50','100','200']
+                )
 
-    Exposure_time1 = st.selectbox(
-                "Exposure_time", Exposure_time
+with col4:
+    M_layout = st.selectbox(
+                "Position nodes(layout)", ['Kamada-Kawai','circular',
+                     'random','bipartite','spring']
             )
+pos=graph(M_layout)
+
+
 
 st.sidebar.header('Properties of Terrain')
 sigma=st.sidebar.slider('Sigma',0.0,0.1,.04,.01)
@@ -345,10 +377,23 @@ if btn3:
                 print(Patinet1+'_'+Array[j]+'_'+Cycle1+'_'+Exposure_time1)
                 idx=np.where(sample_id==Patinet1+'_'+Array[itr]+'_'+Cycle1+'_'+Exposure_time1)[0][0]
                 data1=kinome_data[sample_id1[idx]].astype('float')
-                gray = cr_gt(data1,sigma,res,max_dat)
+                gray = cr_gt(data1,sigma,res,max_dat,pos)
                 # [150:230,150:230]
-                fig = px.imshow(gray,color_continuous_scale='spectral',width=400, height=400)
+                fig = px.imshow(gray,color_continuous_scale='spectral',width=500, height=500)
                 if btn:
+                    res=400
+                    node_x = []
+                    node_y = []
+                    for node in G.nodes():
+                        x, y = pos[node]
+                        node_x.append(200*x+200)
+                        node_y.append(200*y+200)
+                    nme=[]
+                    for node in G.nodes():
+                        nme.append(node)
+                    nme=[]
+                    for node in G.nodes():
+                        nme.append(node)
                     fig.add_trace(go.Scatter(x=node_x, y=node_y,
                               text=nme,
                               textposition='top center',
@@ -364,11 +409,11 @@ if btn3:
               
 
 # st.plotly_chart(node_trace)
-st.text('******************************************************************************************')
+st.text('***********************************************************************************************************************************')
 
 st.header('Cross-tumor Comparative Terrain Modeling')
 
-col1,col2,col3= st.beta_columns(3)
+col1,col2,col3,col4= st.beta_columns(4)
 with col1:
     Array1 = st.selectbox(
                 "Array", Array,key=1
@@ -379,12 +424,25 @@ with col2:
     Cycle1 = st.selectbox(
                 "Cycle", Cycle,key=1
             )
-with col3:
-
-    Exposure_time1 = st.selectbox(
-                "Exposure_time", Exposure_time,key=1
-            )
+if Cycle1 != str(154): 
+    with col3:
     
+        Exposure_time1 = st.selectbox(
+                    "Exposure_time", ['20','50','100'], key=1
+                )
+else:
+    with col3:
+        Exposure_time1 = st.selectbox(
+                    "Exposure_time", ['10','20','50','100','200'],key=1
+                )
+with col4:
+    M_layout = st.selectbox(
+                "Position nodes(layout)", ['Kamada-Kawai','circular',
+                     'random','bipartite','spring'],key=1
+            )    
+pos=graph(M_layout)
+
+
 # cols1,cols2= st.beta_columns(2)
 
 # Patinet11 = st.multiselect(patient_id)
@@ -422,10 +480,20 @@ if btn4:
                     print(Patinet11[itr]+'_'+Array1+'_'+Cycle1+'_'+Exposure_time1)
                     # idx=np.where(sample_id=Patinet11[itr]+'_'+Array1+'_'+Cycle1+'_'+Exposure_time1)[0][0]
                     data1=kinome_data[Patinet11[itr]+'_'+Array1+'_'+Cycle1+'_'+Exposure_time1].astype('float')
-                    gray = cr_gt(data1,sigma,res,max_dat)
+                    gray = cr_gt(data1,sigma,res,max_dat,pos)
                     # [150:230,150:230]
-                    fig = px.imshow(gray,color_continuous_scale='spectral',width=400, height=400)
+                    fig = px.imshow(gray,color_continuous_scale='spectral',width=500, height=500)
                     if btn:
+                        res=400
+                        node_x = []
+                        node_y = []
+                        for node in G.nodes():
+                            x, y = pos[node]
+                            node_x.append(200*x+200)
+                            node_y.append(200*y+200)
+                        nme=[]
+                        for node in G.nodes():
+                            nme.append(node)
                         fig.add_trace(go.Scatter(x=node_x, y=node_y,
                                   text=nme,
                                   textposition='top center',
@@ -606,7 +674,7 @@ def cr_heat_denogram1(data_array,labels,title):      #This fucntion had gotten f
     # Plot!
     return fig
 # st.plotly_chart(node_trace)
-st.text('******************************************************************************************')
+st.text('***********************************************************************************************************************************')
 
 st.header('Plot a Dendrogram with a Heatmap for Arrays')
 
