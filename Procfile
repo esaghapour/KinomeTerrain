@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run code_KinomeTerrain.py
+web: sh setup.sh && streamlit run app.py
