@@ -9,9 +9,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 import networkx as nx
 import base64
+from sklearn.linear_model import LinearRegression
+
 def app():
 
-    st.title('KinomeTerrain (Version 2)')
+    st.title('KinomeTerrain (Version 2.1)')
     st.text('By E.Saghapour, J.Anderson, Jake Chen(Leader), C.Willey(Leader).')
     
     st.header('Analysis your data !')
@@ -58,7 +60,7 @@ def app():
         # patient_id=np.unique(data.iloc[5,7:])
         Array=np.unique(data.iloc[0,1:])
         Cycle=np.unique(data.iloc[1,1:])
-        Exposure_time=np.unique(data.iloc[2,1:])
+        # Exposure_time=np.unique(data.iloc[2,1:])
         Drug=[ 'CT', 'Brigatinib', 'Sitravatinib','Neratinib']
         Cycle_plt=np.array(data.iloc[1,1:69])
         Exposure_time_plt=np.array(data.iloc[2,1:69])
@@ -110,11 +112,18 @@ def app():
         
             Cycle_signal1=Cycle_signal[Cycle_signal['Cycle']==154]
             
-            print(Cycle_signal1)
+            X = Cycle_signal1.Exposure_Time.values[:-1].reshape(-1, 1)
+            model = LinearRegression()
+            model.fit(X, Cycle_signal1.Signal[:-1])
+            
+            x_range = np.linspace(5, 205, 50)
+            y_range = model.predict(x_range.reshape(-1, 1))
             fig1 = px.line(Cycle_signal1, x="Exposure_Time", y="Signal", color="Cycle")
             fig1.update_traces(mode='markers+lines') 
-            # st.plotly_chart(fig)
-            # st.plotly_chart(fig1)
+     
+            fig1.add_traces(go.Scatter(x=x_range, y=y_range, name='Expected linear',
+                                       line = dict(shape = 'linear', width= 2, dash = 'dash')))
+                            
             fig.update_layout(
                 autosize=False,
                 width=600,
