@@ -11,6 +11,7 @@ import networkx as nx
 import plotly.figure_factory as ff
 from scipy.spatial.distance import pdist, squareform
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
 
 def app():
     
@@ -18,7 +19,7 @@ def app():
     data1= pd.read_csv('log2_kinome.csv',sep=',',header=None)
     st.sidebar.text("-------------------------------------")
 
-    ID_peptide=data1.iloc[8:,0]
+    # ID_peptide=data1.iloc[8:,0]
     
     peptic_name=data.iloc[11:,0]
     patient_id=np.unique(data.iloc[5,7:])
@@ -74,7 +75,7 @@ def app():
         itr=itr+1
     
     
-    st.title('KinomeTerrain (Version 2)')
+    st.title('KinomeTerrain (Version 2.1)')
     st.text('By E.Saghapour, J.Anderson, Jake Chen(Leader), C.Willey(Leader).')
     
     # st.header('Plot Cycle/Exposure_Time to Signal for each Peptide in different arrays and Tumors')
@@ -84,7 +85,7 @@ def app():
     col1,col2,col3,col4= st.beta_columns(4)
     with col1:
         peptide1 = st.selectbox(
-                    "ID_peptide", ID_peptide.to_list(),key=11)
+                    "ID_peptide", peptic_name.to_list(),key=11)
                    
     with col2:
         Array1 = st.selectbox(
@@ -123,11 +124,18 @@ def app():
     
         Cycle_signal1=Cycle_signal[Cycle_signal['Cycle']==154]
         
-        print(Cycle_signal1)
+        X = Cycle_signal1.Exposure_Time.values[:-1].reshape(-1, 1)
+        model = LinearRegression()
+        model.fit(X, Cycle_signal1.Signal[:-1])
+        
+        x_range = np.linspace(5, 205, 50)
+        y_range = model.predict(x_range.reshape(-1, 1))
         fig1 = px.line(Cycle_signal1, x="Exposure_Time", y="Signal", color="Cycle")
         fig1.update_traces(mode='markers+lines') 
-        # st.plotly_chart(fig)
-        # st.plotly_chart(fig1)
+ 
+        fig1.add_traces(go.Scatter(x=x_range, y=y_range, name='Expected linear',
+                                   line = dict(shape = 'linear', width= 2, dash = 'dash')))
+                        
         fig.update_layout(
             autosize=False,
             width=600,
