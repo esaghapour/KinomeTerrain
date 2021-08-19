@@ -121,7 +121,7 @@ def app():
             fig1 = px.line(Cycle_signal1, x="Exposure_Time", y="Signal", color="Cycle")
             fig1.update_traces(mode='markers+lines') 
      
-            fig1.add_traces(go.Scatter(x=x_range, y=y_range, name='Expected linear',
+            fig1.add_traces(go.Scatter(x=x_range, y=y_range, name='Expected line',
                                        line = dict(shape = 'linear', width= 2, dash = 'dash')))
                             
             fig.update_layout(
