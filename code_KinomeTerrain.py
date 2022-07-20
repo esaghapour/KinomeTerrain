@@ -521,6 +521,7 @@ def app():
               y =df.columns ,
               z = dataHeat_arr,
               colorscale = 'Blues',
+              autocolorscale=True,
               colorbar = dict(
                       title="Scale",
                       thicknessmode="pixels",
