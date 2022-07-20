@@ -699,7 +699,7 @@ def app():
             idx=np.where(data1.iloc[2,0:91]==Array1)[0]
             data_array=data1.iloc[8:,idx]
             labels_col=data1.iloc[1,idx]+'_'+data1.iloc[2,idx]
-            data_array1=data_array.copy()
+            
             labels_tumor=[]
             itr=0
             for name in labels_col:
@@ -709,16 +709,18 @@ def app():
             
             
             data_array=data_array.values.astype('float')
-          
+            
             fig1=cr_heat_denogram1(data_array,labels,'Peptide vs Peptide')
             st.plotly_chart(fig1)
             fig2=cr_heat_denogram1(data_array.T,labels_tumor,'Tumor vs Tumor')
             st.plotly_chart(fig2)
-            fig3=cr_heat_denogram(data_array1,'Peptide vs Tumor')
-            st.plotly_chart(fig3)
+            
             data_array=pd.DataFrame(data_array).astype('float')
             data_array.index=labels
             data_array.columns=labels_tumor
+            
+            fig3=cr_heat_denogram(data_array,'Peptide vs Tumor')
+            st.plotly_chart(fig3)
             
             # sns.clustermap(data_array,standard_scale=1, metric="correlation",figsize=(10, 30))
             # sns.clustermap(data_array, standard_scale=1)
@@ -735,12 +737,12 @@ def app():
             st.plotly_chart(fig1)
             fig2=cr_heat_denogram1(data_array.T,labels_tumor,'Tumor vs Tumor')
             st.plotly_chart(fig2)
-            fig3=cr_heat_denogram(data_array,'Peptide vs Tumor')
-            st.plotly_chart(fig3)
+            
             data_array=pd.DataFrame(data_array).astype('float')
             data_array.index=labels
             data_array.columns=labels_tumor
-            
+            fig3=cr_heat_denogram(data_array,'Peptide vs Tumor')
+            st.plotly_chart(fig3)
             # sns.clustermap(data_array,standard_scale=1, metric="correlation",figsize=(10, 30))
             # sns.clustermap(data_array, standard_scale=1)
             sns.clustermap(data_array, standard_scale=1,figsize=(20, 30))
