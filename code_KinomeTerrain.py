@@ -520,7 +520,7 @@ def app():
               x = df.index ,
               y =df.columns ,
               z = dataHeat_arr,
-              colorscale = 'jet',
+              colorscale = 'Blues',
               colorbar = dict(
                       title="Scale",
                       thicknessmode="pixels",
