@@ -493,89 +493,102 @@ def app():
             st.warning('Please select at least two tumors')
     
     
-    def cr_heat_denogram(data_array,labels,labels_col,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
-        # Initialize figure by creating upper dendrogram
-        fig = ff.create_dendrogram(data_array, orientation='bottom', labels=labels)
-        for i in range(len(fig['data'])):
-            fig['data'][i]['yaxis'] = 'y2'
-        
-        # for data in fig['data']:
-        #     fig.add_trace(data)
-        
-        # Create Side Dendrogram
-        dendro_side = ff.create_dendrogram(data_array.T, orientation='right', labels=labels_col)
-        for i in range(len(dendro_side['data'])):
-            dendro_side['data'][i]['xaxis'] = 'x2'
-        
-        # Add Side Dendrogram Data to Figure
-        for data in dendro_side['data']:
-            fig.add_trace(data)
-        
-        # Create Heatmap
-        # dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
-        # dendro_leaves = list(map(int, dendro_leaves))
-        # data_dist = pdist(data_array.T)
-        # heat_data = squareform(data_dist)
-        # heat_data = heat_data[dendro_leaves,:]
-        # heat_data = heat_data[:,dendro_leaves]
-        
-        heatmap = [
-            go.Heatmap(
-                x = labels,
-                y = labels_col,
-                z = data_array.T,
-                colorscale = 'Blues'
-            )
-        ]
-        
-        heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
-        heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
-        
-        # Add Heatmap Data to Figure
-        for data in heatmap:
-            fig.add_trace(data)
-        
-        # Edit Layout
-        fig.update_layout({'width':800, 'height':800,
-                                  'showlegend':False, 'hovermode': 'closest',
-                                  })
-        # Edit xaxis
-        fig.update_layout(xaxis={'domain': [.15, 1],
-                                          'mirror': False,
-                                          'showgrid': False,
-                                          'showline': False,
-                                          'zeroline': False,
-                                          'ticks':""})
-        # Edit xaxis2
-        fig.update_layout(xaxis2={'domain': [0, .15],
-                                            'mirror': False,
-                                            'showgrid': False,
-                                            'showline': False,
-                                            'zeroline': False,
-                                            'showticklabels': False,
-                                            'ticks':""})
-        
-        # Edit yaxis
-        fig.update_layout(yaxis={'domain': [0, .85],
-                                          'mirror': False,
-                                          'showgrid': False,
-                                          'showline': False,
-                                          'zeroline': False,
-                                          'showticklabels': False,
-                                          'ticks': ""
-                                })
-        # Edit yaxis2
-        fig.update_layout(yaxis2={'domain':[.825, .975],
-                                            'mirror': False,
-                                            'showgrid': False,
-                                            'showline': False,
-                                            'zeroline': False,
-                                            'showticklabels': False,
-                                            'ticks':""})
-        fig.update_layout(title=title)
-        #               yaxis={'labels_col.to_list'})
-        # Plot!
-        return fig
+    def cr_heat_denogram(df,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
+            # Initialize figure by creating upper dendrogram
+      dataHeat_arr= df     
+      dataHeat_arr_t= np.transpose(dataHeat_arr)
+      fig = ff.create_dendrogram(dataHeat_arr_t, orientation='bottom', labels=df.columns  )
+
+
+      for i in range(len(fig['data'])):
+          fig['data'][i]['yaxis'] = 'y2'
+
+      # Create Side Dendrogram
+
+      # dendro_side = ff.create_dendrogram(dataHeat_arr_t, orientation='right' ,labels=name_molec[:100])
+      dendro_side = ff.create_dendrogram(dataHeat_arr, orientation='right', labels=df.index)
+      for i in range(len(dendro_side['data'])):
+          dendro_side['data'][i]['xaxis'] = 'x2'
+
+
+      # Add Side Dendrogram Data to Figure
+      for data in dendro_side['data']:
+          fig.add_trace(data)
+
+      heatmap = [
+          go.Heatmap(
+              x = df.index ,
+              y =df.columns ,
+              z = dataHeat_arr,
+              colorscale = 'jet',
+              colorbar = dict(
+                      title="Scale",
+                      thicknessmode="pixels",
+                      thickness=20,
+                      yanchor="top",
+                      tickfont=dict(size=10),
+                      x=0,
+                      y=1,
+                      len=.1,
+
+                      )
+          )
+      ]
+
+      heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
+      heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
+
+      # Add Heatmap Data to Figure
+      for data in heatmap:
+          fig.add_trace(data)
+
+      fig['layout']['yaxis']['ticktext'] = np.asarray(df.index)
+      fig['layout']['yaxis']['tickvals'] = np.asarray(dendro_side['layout']['yaxis']['tickvals'])
+
+      # Edit Layout
+      fig.update_layout({'width':800, 'height':1000,
+                              'showlegend':False, 'hovermode': 'closest',
+                              })
+
+      # Edit xaxis
+      fig.update_layout(xaxis={'domain': [.15, 1],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'ticks':""})
+
+      # Edit xaxis2
+      fig.update_layout(xaxis2={'domain': [0, .15],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
+      # Edit yaxis
+      fig.update_layout(yaxis={'domain': [0, .85],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': True,
+                                        'ticks': ""
+                              })
+
+      # Edit yaxis2
+      fig.update_layout(yaxis2={'domain':[.825, .975],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
+
+      fig.update_layout(
+          yaxis={'side': 'right'} ,
+      )
+      return fig
     
     def cr_heat_denogram1(data_array,labels,title):      #This fucntion is avaibale through https://plotly.com/python/dendrogram/
         # Initialize figure by creating upper dendrogram
@@ -686,7 +699,7 @@ def app():
             idx=np.where(data1.iloc[2,0:91]==Array1)[0]
             data_array=data1.iloc[8:,idx]
             labels_col=data1.iloc[1,idx]+'_'+data1.iloc[2,idx]
-            
+            data_array1=data_array.copy()
             labels_tumor=[]
             itr=0
             for name in labels_col:
@@ -701,7 +714,7 @@ def app():
             st.plotly_chart(fig1)
             fig2=cr_heat_denogram1(data_array.T,labels_tumor,'Tumor vs Tumor')
             st.plotly_chart(fig2)
-            fig3=cr_heat_denogram(data_array,labels,labels_tumor,'Peptide vs Tumor')
+            fig3=cr_heat_denogram(data_array1,'Peptide vs Tumor')
             st.plotly_chart(fig3)
             data_array=pd.DataFrame(data_array).astype('float')
             data_array.index=labels
@@ -722,7 +735,7 @@ def app():
             st.plotly_chart(fig1)
             fig2=cr_heat_denogram1(data_array.T,labels_tumor,'Tumor vs Tumor')
             st.plotly_chart(fig2)
-            fig3=cr_heat_denogram(data_array,labels,labels_tumor,'Peptide vs Tumor')
+            fig3=cr_heat_denogram(data_array,'Peptide vs Tumor')
             st.plotly_chart(fig3)
             data_array=pd.DataFrame(data_array).astype('float')
             data_array.index=labels
