@@ -673,6 +673,7 @@ def app():
         fig.update_layout(
                   yaxis={'side': 'right'} ,
               )
+        fig.update_layout(plot_bgcolor='white')
         return fig
     # st.plotly_chart(node_trace)
     st.text('***********************************************************************************************************************************')
