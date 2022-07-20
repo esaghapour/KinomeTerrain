@@ -585,7 +585,7 @@ def app():
                                                 'zeroline': False,
                                                 'showticklabels': False,
                                                 'ticks':""})
-
+              fig.update_layout(title=title)
               fig.update_layout(
                   yaxis={'side': 'right'} ,
               )
