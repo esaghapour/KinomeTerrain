@@ -589,6 +589,7 @@ def app():
               fig.update_layout(
                   yaxis={'side': 'right'} ,
               )
+              fig.update_layout(plot_bgcolor='white')
               return fig
     
     def cr_heat_denogram1(data_array,labels,title):      #This fucntion is avaibale through https://plotly.com/python/dendrogram/
