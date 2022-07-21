@@ -494,7 +494,7 @@ def app():
     
     
     def cr_heat_denogram(df,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
-            # Initialize figure by creating upper dendrogram 10*20
+      # Initialize figure by creating upper dendrogram 10*20
       dataHeat_arr= df     
       dataHeat_arr_t= np.transpose(dataHeat_arr)
       fig = ff.create_dendrogram(dataHeat_arr_t, orientation='bottom', labels=df.columns  )
