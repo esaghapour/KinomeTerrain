@@ -493,115 +493,115 @@ def app():
             st.warning('Please select at least two tumors')
     
     
-                def cr_heat_denogram(df,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
-                    # Initialize figure by creating upper dendrogram 10*20
-              dataHeat_arr= df     
-              dataHeat_arr_t= np.transpose(dataHeat_arr)
-              fig = ff.create_dendrogram(dataHeat_arr_t, orientation='bottom', labels=df.columns  )
+    def cr_heat_denogram(df,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
+            # Initialize figure by creating upper dendrogram 10*20
+      dataHeat_arr= df     
+      dataHeat_arr_t= np.transpose(dataHeat_arr)
+      fig = ff.create_dendrogram(dataHeat_arr_t, orientation='bottom', labels=df.columns  )
 
 
-              for i in range(len(fig['data'])):
-                  fig['data'][i]['yaxis'] = 'y2'
+      for i in range(len(fig['data'])):
+          fig['data'][i]['yaxis'] = 'y2'
 
-              # Create Side Dendrogram
+      # Create Side Dendrogram
 
-              # dendro_side = ff.create_dendrogram(dataHeat_arr_t, orientation='right' ,labels=name_molec[:100])
-              dendro_side = ff.create_dendrogram(dataHeat_arr, orientation='right', labels=df.index)
-              for i in range(len(dendro_side['data'])):
-                  dendro_side['data'][i]['xaxis'] = 'x2'
-
-
-              # Add Side Dendrogram Data to Figure
-              for data in dendro_side['data']:
-                  fig.add_trace(data)
-
-              fig_leaves = fig['layout']['xaxis']['ticktext']
-              fig_leaves = list(map(int, fig_leaves))
-
-              dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
-              dendro_leaves = list(map(int, dendro_leaves))
+      # dendro_side = ff.create_dendrogram(dataHeat_arr_t, orientation='right' ,labels=name_molec[:100])
+      dendro_side = ff.create_dendrogram(dataHeat_arr, orientation='right', labels=df.index)
+      for i in range(len(dendro_side['data'])):
+          dendro_side['data'][i]['xaxis'] = 'x2'
 
 
-              dataHeat_arr = dataHeat_arr.iloc[dendro_leaves,:]
-              dataHeat_arr = dataHeat_arr.iloc[:,fig_leaves]
+      # Add Side Dendrogram Data to Figure
+      for data in dendro_side['data']:
+          fig.add_trace(data)
+
+      fig_leaves = fig['layout']['xaxis']['ticktext']
+      fig_leaves = list(map(int, fig_leaves))
+
+      dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
+      dendro_leaves = list(map(int, dendro_leaves))
+
+
+      dataHeat_arr = dataHeat_arr.iloc[dendro_leaves,:]
+      dataHeat_arr = dataHeat_arr.iloc[:,fig_leaves]
 
 
 
-              heatmap = [
-                  go.Heatmap(
-                      x = fig_leaves ,
-                      y =dendro_leaves ,
-                      z = dataHeat_arr,
-                      colorscale = 'jet',
-                      colorbar = dict(
-                              title="Scale",
-                              thicknessmode="pixels",
-                              thickness=20,
-                              yanchor="top",
-                              tickfont=dict(size=10),
-                              x=1.2,
-                              y=1,
-                              len=.2,
+      heatmap = [
+          go.Heatmap(
+              x = fig_leaves ,
+              y =dendro_leaves ,
+              z = dataHeat_arr,
+              colorscale = 'jet',
+              colorbar = dict(
+                      title="Scale",
+                      thicknessmode="pixels",
+                      thickness=20,
+                      yanchor="top",
+                      tickfont=dict(size=10),
+                      x=1.2,
+                      y=1,
+                      len=.2,
 
-                              )
-                  )
-              ]
+                      )
+          )
+      ]
 
-              heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
-              heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
+      heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
+      heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
 
-              # Add Heatmap Data to Figure
-              for data in heatmap:
-                  fig.add_trace(data)
+      # Add Heatmap Data to Figure
+      for data in heatmap:
+          fig.add_trace(data)
 
-              fig['layout']['yaxis']['ticktext'] = np.asarray(dendro_side['layout']['yaxis']['ticktext'])
-              fig['layout']['yaxis']['tickvals'] = np.asarray(dendro_side['layout']['yaxis']['tickvals'])
+      fig['layout']['yaxis']['ticktext'] = np.asarray(dendro_side['layout']['yaxis']['ticktext'])
+      fig['layout']['yaxis']['tickvals'] = np.asarray(dendro_side['layout']['yaxis']['tickvals'])
 
-              # Edit Layout
-              fig.update_layout({'width':800, 'height':1000,
-                                      'showlegend':False, 'hovermode': 'closest',
-                                      })
+      # Edit Layout
+      fig.update_layout({'width':800, 'height':1000,
+                              'showlegend':False, 'hovermode': 'closest',
+                              })
 
-              # Edit xaxis
-              fig.update_layout(xaxis={'domain': [.15, 1],
-                                                'mirror': False,
-                                                'showgrid': False,
-                                                'showline': False,
-                                                'zeroline': False,
-                                                'ticks':""})
+      # Edit xaxis
+      fig.update_layout(xaxis={'domain': [.15, 1],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'ticks':""})
 
-              # Edit xaxis2
-              fig.update_layout(xaxis2={'domain': [0, .15],
-                                                'mirror': False,
-                                                'showgrid': False,
-                                                'showline': False,
-                                                'zeroline': False,
-                                                'showticklabels': False,
-                                                'ticks':""})
-              # Edit yaxis
-              fig.update_layout(yaxis={'domain': [0, .85],
-                                                'mirror': False,
-                                                'showgrid': False,
-                                                'showline': False,
-                                                'zeroline': False,
-                                                'showticklabels': True,
-                                                'ticks': ""
-                                      })
+      # Edit xaxis2
+      fig.update_layout(xaxis2={'domain': [0, .15],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
+      # Edit yaxis
+      fig.update_layout(yaxis={'domain': [0, .85],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': True,
+                                        'ticks': ""
+                              })
 
-              # Edit yaxis2
-              fig.update_layout(yaxis2={'domain':[.825, .975],
-                                                'mirror': False,
-                                                'showgrid': False,
-                                                'showline': False,
-                                                'zeroline': False,
-                                                'showticklabels': False,
-                                                'ticks':""})
+      # Edit yaxis2
+      fig.update_layout(yaxis2={'domain':[.825, .975],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks':""})
 
-              fig.update_layout(
-                  yaxis={'side': 'right'} ,
-              )
-              fig.update_layout(plot_bgcolor='white')
-              return fig
+      fig.update_layout(
+          yaxis={'side': 'right'} ,
+      )
+      fig.update_layout(plot_bgcolor='white')
+      return fig
     
     def cr_heat_denogram1(data_array,labels,title):      #This fucntion is avaibale through https://plotly.com/python/dendrogram/
         # Initialize figure by creating upper dendrogram
