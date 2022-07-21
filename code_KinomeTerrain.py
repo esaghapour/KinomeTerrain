@@ -493,8 +493,8 @@ def app():
             st.warning('Please select at least two tumors')
     
     
-    def cr_heat_denogram(df,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
-            # Initialize figure by creating upper dendrogram
+                def cr_heat_denogram(df,title):      #This fucntion had gotten from https://plotly.com/python/dendrogram/
+                    # Initialize figure by creating upper dendrogram 10*20
               dataHeat_arr= df     
               dataHeat_arr_t= np.transpose(dataHeat_arr)
               fig = ff.create_dendrogram(dataHeat_arr_t, orientation='bottom', labels=df.columns  )
@@ -515,22 +515,33 @@ def app():
               for data in dendro_side['data']:
                   fig.add_trace(data)
 
+              fig_leaves = fig['layout']['xaxis']['ticktext']
+              fig_leaves = list(map(int, fig_leaves))
+
+              dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
+              dendro_leaves = list(map(int, dendro_leaves))
+
+
+              dataHeat_arr = dataHeat_arr.iloc[dendro_leaves,:]
+              dataHeat_arr = dataHeat_arr.iloc[:,fig_leaves]
+
+
+
               heatmap = [
                   go.Heatmap(
-                      x = df.index ,
-                      y =df.columns ,
+                      x = fig_leaves ,
+                      y =dendro_leaves ,
                       z = dataHeat_arr,
-                      colorscale = 'Blues',
-
+                      colorscale = 'jet',
                       colorbar = dict(
                               title="Scale",
                               thicknessmode="pixels",
                               thickness=20,
                               yanchor="top",
                               tickfont=dict(size=10),
-                              x=0,
+                              x=1.2,
                               y=1,
-                              len=.1,
+                              len=.2,
 
                               )
                   )
@@ -543,7 +554,7 @@ def app():
               for data in heatmap:
                   fig.add_trace(data)
 
-              fig['layout']['yaxis']['ticktext'] = np.asarray(df.index)
+              fig['layout']['yaxis']['ticktext'] = np.asarray(dendro_side['layout']['yaxis']['ticktext'])
               fig['layout']['yaxis']['tickvals'] = np.asarray(dendro_side['layout']['yaxis']['tickvals'])
 
               # Edit Layout
@@ -585,7 +596,7 @@ def app():
                                                 'zeroline': False,
                                                 'showticklabels': False,
                                                 'ticks':""})
-              fig.update_layout(title=title)
+
               fig.update_layout(
                   yaxis={'side': 'right'} ,
               )
