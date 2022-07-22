@@ -516,14 +516,14 @@ def app():
           fig.add_trace(data)
 
       fig_leaves = fig['layout']['xaxis']['ticktext']
-      fig_leaves = list(map(int, fig_leaves))
+      #fig_leaves = list(map(int, fig_leaves))
 
       dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
-      dendro_leaves = list(map(int, dendro_leaves))
+      #dendro_leaves = list(map(int, dendro_leaves))
 
 
-      dataHeat_arr = dataHeat_arr.iloc[dendro_leaves,:]
-      dataHeat_arr = dataHeat_arr.iloc[:,fig_leaves]
+      dataHeat_arr = dataHeat_arr.loc[dendro_leaves,:]
+      dataHeat_arr = dataHeat_arr.loc[:,fig_leaves]
 
 
 
