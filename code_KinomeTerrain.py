@@ -413,7 +413,10 @@ def app():
                         gray = cr_gt(data1,Layout,sigma,res,Patinet1+'_'+Array[itr]+'_'+Cycle1+'_'+Exposure_time1)
                         # [150:230,150:230]
                         # fig = px.imshow(gray,color_continuous_scale='spectral',width=500, height=500)
-                        fig = px.imshow(gray,color_continuous_scale='jet',range_color=[-100,100],width=500, height=500)
+                        import plotly.graph_objects as go
+
+                        fig = go.Figure(data=go.Heatmap(z=gray, colorscale='Jet', zmin=-100, zmax=100))
+                        fig.update_layout(width=500, height=500)
                         if btn:
                             
                             fig.add_trace(go.Scatter(x=200*Layout['X']+200, y=200*Layout['Y']+200,
